@@ -4,8 +4,8 @@ import sys
 import time
 import random
 
-TAILLE_CELL = 5
-N = 100
+TAILLE_CELL = 2
+N = 150
 BLEU = (70, 130, 180)
 NOIR = (20, 20, 20)
 GRIS = (40, 40, 40)
@@ -39,23 +39,29 @@ class particule():
 
     def CheckVoisins(self, grille):
 
-        if self.type != 'sable':
-            return
-
-        directions = [(1, 1), (-1, 1)]
         bas = (self.x, self.y + self.grav)
 
-        if bas in grille and not grille[bas].vie:
+        if bas not in grille :
+            self.next_vie = True
+
+        elif bas in grille and not grille[bas].vie :
+            self.next_vie = False
             grille[bas].next_vie = True
-            self.next_vie = False
 
-        dx, dy = random.choice(directions)
-        diag = (self.x + dx, self.y + dy)
+        else :    
+            diag1 = (self.x + 1,self.y + 1)
+            diag2 = (self.x - 1,self.y + 1)
 
-        if diag in grille and not grille[diag].vie:
-            grille[diag].next_vie = True
-            self.next_vie = False
+            if diag1 in grille and not grille[diag1].vie :
+                grille[diag1].next_vie = True
+                self.next_vie = False
 
+            elif diag2 in grille and not grille[diag2].vie :
+                grille[diag2].next_vie = True
+                self.next_vie = False
+
+            else :
+                self.next_vie = True
 
 def creer_grille(N):
     grille = {}
@@ -89,19 +95,20 @@ while loop :
                 pygame.quit()
                 sys.exit()
 
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1:
-                x_pixel, y_pixel = event.pos
-                case_x = x_pixel // 5
-                case_y = y_pixel // 5
+    mouse_state = pygame.mouse.get_pressed()
+    if mouse_state[0]:
+        x_pixel, y_pixel = event.pos
+        case_x = x_pixel // TAILLE_CELL
+        case_y = y_pixel // TAILLE_CELL
 
-                if (case_x, case_y) in grille:
-                    grille[(case_x, case_y)].reveil()
+        if (case_x, case_y) in grille:
+            grille[(case_x, case_y)].reveil()
 
 
-    for y in range(N-1, -1, -1):
+    for y in range(N):
         for x in range(N):
-            grille[(x,y)].CheckVoisins(grille)
+            if grille[(x,y)].vie :
+                grille[(x,y)].CheckVoisins(grille)
 
     for y in range(N):
         for x in range(N):
@@ -112,5 +119,5 @@ while loop :
     afficher_grille(screen, grille)
     pygame.display.flip()
 
-    clock.tick(60)
+    clock.tick(90)
     
