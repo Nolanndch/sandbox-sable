@@ -94,9 +94,41 @@ class eau(particule):
         self.grav = 1
 
     def ChekVoisins(self, grille):
-        pass
+        bas = (self.x, self.y + self.grav)
+        diag1 = (self.x + 1,self.y + 1)
+        diag2 = (self.x - 1,self.y + 1)
+        gauche = (self.x - 1,self.y)
+        droite = (self.x + 1,self.y)
 
+        if self.y+self.grav < max_y and not bas in grille :
+            del grille[(self.x,self.y)]
+            self.y+=self.grav
+            grille[(self.x,self.y)] = self
 
+        else :
+            if diag1 not in grille and droite not in grille and self.x+1<=max_x and self.y+1<max_y:
+                del grille[(self.x,self.y)]
+                self.x+=1
+                self.y+=1
+                grille[(self.x,self.y)] = self
+
+            elif diag2 not in grille and gauche not in grille and self.x-1>=min_x and self.y+1<max_y:
+                del grille[(self.x,self.y)]
+                self.x-=1
+                self.y+=1
+                grille[(self.x,self.y)] = self
+
+            elif diag1 in grille and droite not in grille and self.x+1<=max_x :
+                del grille[(self.x,self.y)]
+                self.x+=1
+                grille[(self.x,self.y)] = self
+            
+            elif diag2 in grille and gauche not in grille and self.x-1>=min_x :
+                del grille[(self.x,self.y)]
+                self.x-=1
+                grille[(self.x,self.y)] = self
+
+        
 def afficher_grille(surface, grille):
     zone_jeu = pygame.Rect(min_x * TAILLE_CELL, min_y * TAILLE_CELL, 
                            (max_x - min_x) * TAILLE_CELL, (max_y - min_y) * TAILLE_CELL)
